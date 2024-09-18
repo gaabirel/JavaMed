@@ -19,7 +19,7 @@ public abstract class Usuario {
         this.senha = senha;
     }
 
-    // setters and getters 
+    // getters and setters
     public int getId() {
         return id;
     }

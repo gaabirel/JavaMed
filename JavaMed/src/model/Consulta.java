@@ -1,6 +1,7 @@
 package model;
 
 import java.time.*;
+import java.time.format.*;
 
 /*
  * classe que representa uma consulta
@@ -16,13 +17,20 @@ public class Consulta {
     private String diagnostico;
 
     public Consulta(int idPaciente, int idMedico, LocalDateTime data, String diagnostico) {
-        this.diagnostico = diagnostico;
         this.idPaciente = idPaciente;
         this.idMedico = idMedico;
         this.data = data;
+        this.diagnostico = diagnostico;
     }
 
-    // setters and getters
+    public Consulta(int idPaciente, int idMedico, String data, String diagnostico) {
+        this.idPaciente = idPaciente;
+        this.idMedico = idMedico;
+        this.data = LocalDateTime.parse(data, DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm"));
+        this.diagnostico = diagnostico;
+    }
+
+    // getters and setters
     public String getDiagnostico() {
         return diagnostico;
     }
@@ -47,8 +55,9 @@ public class Consulta {
         this.idMedico = idMedico;
     }
 
-    public LocalDateTime getData() {
-        return data;
+    public String getData() {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
+        return data.format(formatter);
     }
 
     @Override
