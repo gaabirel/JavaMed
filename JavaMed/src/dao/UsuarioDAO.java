@@ -106,6 +106,68 @@ public class UsuarioDAO {
     }
 
     /*
+     * Método que exclui um único usuario do arquivo, recebendo o ID
+    */
+    public void excluirUnico(int idExc) throws IOException {
+
+        // verificando se o usuario existe
+        if ( !verificarRegistroID(idExc) ) {
+            return;
+        }
+
+        BufferedReader bfr = new BufferedReader(new FileReader(nomeArquivo));
+        List<Usuario> usuariosAtualizados = new ArrayList<>();
+
+        String linha;
+
+        while ( (linha = bfr.readLine()) != null ) {
+
+            String[] partes = linha.split(";");
+            // id;telefone;cpf;nome;senha
+            int id = Integer.parseInt(partes[0]);
+            String tel = partes[1];
+            String cpf = partes[2];
+            String nome = partes[3];
+            String senha = partes[4];
+
+            Usuario usuario;
+
+            // caso não seja o usuario a ser excluido
+            if ( !(id == idExc) ) {
+                if ( nomeArquivo.contains("pacientes") ) {
+                    usuario = new Paciente(id, tel, cpf, nome, senha);
+                } else if ( nomeArquivo.contains("medicos") ) {
+                    usuario = new Medico(id, tel, cpf, nome, senha);
+                } else {
+                    usuario = new Atendente(id, tel, cpf, nome, senha);
+                }
+                // adiciono no novo array
+                usuariosAtualizados.add(usuario);
+            }
+
+        }
+
+        bfr.close();
+
+        // salvo esse novo array no arquivo
+        salvarTodos(usuariosAtualizados);
+
+    }
+
+    /*
+     *  Método que exclui todos os usuarios
+    */
+    public void excluirTodos() throws IOException {
+
+        BufferedWriter bfw = new BufferedWriter(new FileWriter(nomeArquivo));
+
+        bfw.write("");
+
+        bfw.close();
+
+    }
+
+    /*
      * Método que verifica se determinado Usuário ja esta no banco
     */
     public Boolean verificarRegistroID(int idBusca) throws IOException {
