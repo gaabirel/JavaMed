@@ -52,7 +52,7 @@ public class UsuarioDAO {
     */
     public void salvarTodos(List<Usuario> usuarios) throws IOException {
 
-        BufferedWriter bfw = new BufferedWriter(new FileWriter(nomeArquivo));
+        BufferedWriter bfw = new BufferedWriter(new FileWriter(nomeArquivo, true));
 
         for ( Usuario usuario : usuarios ) {
             // verificando se o usuario nao esta cadastrado

@@ -12,4 +12,8 @@ public class AtendenteDAO extends UsuarioDAO{
         super(nomeArquivo);
     }
 
+    public AtendenteDAO() {
+        super("data/atendentes.csv");
+    }
+
 }

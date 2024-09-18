@@ -1,19 +1,19 @@
 import model.*;
 // import view.*;
+// import controller.*;
+import dao.*;
 
 import java.io.*;
 import java.util.*;
 import java.time.*;
 
-// import controller.*;
-import dao.*;
 
 /*
  * TESTES 
  *      Model       [X] 
- *      Controller  []
  *      View        []
- *      DAO         []
+ *      Controller  []
+ *      DAO         [X]
 */
 
 /* MODEL

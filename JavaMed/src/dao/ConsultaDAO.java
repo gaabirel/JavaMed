@@ -18,6 +18,9 @@ public class ConsultaDAO{
     public ConsultaDAO(String nomeArquivo) {
         this.nomeArquivo = nomeArquivo;
     }
+    public ConsultaDAO() {
+        this.nomeArquivo = "data/consultas.csv";
+    }
 
     // getters and setters
     public void setNomeArquivo(String nomeArquivo) {

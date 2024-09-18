@@ -11,5 +11,8 @@ public class PacienteDAO extends UsuarioDAO{
     public PacienteDAO(String nomeArquivo) {
         super(nomeArquivo);
     }
+    public PacienteDAO() {
+        super("data/pacientes.csv");
+    }
 
 }
