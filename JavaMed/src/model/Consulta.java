@@ -11,19 +11,22 @@ import java.time.format.*;
 
 public class Consulta {
 
+    private int idConsulta;
     private int idPaciente;
     private int idMedico;
     private LocalDateTime data;
     private String diagnostico;
 
-    public Consulta(int idPaciente, int idMedico, LocalDateTime data, String diagnostico) {
+    public Consulta(int idConsulta, int idPaciente, int idMedico, LocalDateTime data, String diagnostico) {
+        this.idConsulta = idConsulta;
         this.idPaciente = idPaciente;
         this.idMedico = idMedico;
         this.data = data;
         this.diagnostico = diagnostico;
     }
 
-    public Consulta(int idPaciente, int idMedico, String data, String diagnostico) {
+    public Consulta(int idConsulta, int idPaciente, int idMedico, String data, String diagnostico) {
+        this.idConsulta = idConsulta;
         this.idPaciente = idPaciente;
         this.idMedico = idMedico;
         this.data = LocalDateTime.parse(data, DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm"));
@@ -31,6 +34,14 @@ public class Consulta {
     }
 
     // getters and setters
+    public int getIdConsulta() {
+        return idConsulta;
+    }
+    
+    public void setIdConsulta(int idConsulta){
+        this.idConsulta = idConsulta;
+    }
+    
     public String getDiagnostico() {
         return diagnostico;
     }
@@ -63,9 +74,10 @@ public class Consulta {
     @Override
     // idPaciente;idMedico;data;diagnostico
     public String toString() {
-        return getPaciente() + ";" + 
-               getMedico()   + ";" +
-               getData()     + ";" +
+        return getIdConsulta() + ";" +
+               getPaciente()   + ";" + 
+               getMedico()     + ";" +
+               getData()       + ";" +
                getDiagnostico();
     }
 

@@ -8,8 +8,8 @@ package model;
 
 public class Medico extends Usuario {
 
-    public Medico(int id, String telefone, String cpf, String nome, String senha) {
-        super(id, telefone, cpf, nome, senha);
+    public Medico(int id, String telefone, String cpf, String nome, String login, String senha) {
+        super(id, telefone, cpf, nome, login, senha);
     }
 
 }

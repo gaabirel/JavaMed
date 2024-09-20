@@ -8,8 +8,8 @@ package model;
 
 public class Atendente extends Usuario {
 
-    public Atendente(int id, String telefone, String cpf, String nome, String senha) {
-        super(id, telefone, cpf, nome, senha);
+    public Atendente(int id, String telefone, String cpf, String nome, String login, String senha) {
+        super(id, telefone, cpf, nome, login, senha);
     }
 
 }
