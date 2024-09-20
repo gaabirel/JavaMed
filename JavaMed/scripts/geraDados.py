@@ -19,6 +19,10 @@ banco = {
     "consulta"  : "../data/consultas.csv"
 }
 
+# vetor de doencas
+# Lista de doenças
+doencas = ["Diabetes", "Hipertensão", "Asma", "Bronquite", "Pneumonia", "Tuberculose", "Gripe", "Dengue", "Malária", "Hepatite", "AIDS", "COVID-19", "Febre Amarela", "Sarampo", "Catapora", "Zika", "Chikungunya", "Câncer", "Insuficiência Renal", "Doença de Alzheimer", "Parkinson", "Doença de Crohn", "Lúpus", "Esclerose Múltipla", "Doença Celíaca"]
+
 # arquivos json
 nomes = load(open("nomes.json"))
 sobre = load(open("sobrenomes.json"))
@@ -45,24 +49,39 @@ class GeraDados:
             nome      = f"{choice(nomes)} {choice(sobre)}"
             cpf       = randint(10000000000, 99999999999)
             telefone  = randint(100000000, 999999999)
+            senha     = f"{nome.split(' ')[0]}{randint(100, 999)}"
 
-            saida.write(f"{id};{nome};{cpf};{telefone}\n")
+            saida.write(f"{id};{nome};{cpf};{telefone};{nome.split(' ')[0]};{senha}\n")
             
             if self.debug:
                 print(f'{i+1:02d}. Dados de {nome} gerados')
 
         saida.close()
 
-    def geraConsultas(self, n, debug):
+    def geraConsultas(self, n):
         saida = open(banco["consulta"], "w+")
 
+        # vetor de ids para verificar depois
+        ids = []
+        
         for i in range(n):
+            id        = randint(1, 1000)
+            # verifica se o ID ja foi criado
+            while id in ids:
+                id = randint(1, 1000)
+            ids.append(id)
+            
             idPac = randint(1, 1000)
             idMed = randint(1, 1000)
+            data = f"{randint(1, 31):02d}/{randint(1, 12):02d}/{randint(2000, 2020)} {randint(0, 23):02d}:{randint(0, 59):02d}"
+            doenca = choice(doencas)
 
+            saida.write(f"{id};{idPac};{idMed};{data};{doenca}\n")
+
+            if self.debug:
+                print(f'Consulta {i+1:02d} gerada com id {id}')
+        
         saida.close()
-
-        return
 
 
 def main():
@@ -71,7 +90,7 @@ def main():
     geraDados.geraUsuarios(10, "paciente")
     geraDados.geraUsuarios(10, "medico")
     geraDados.geraUsuarios(10, "atendente")
-    # geraDados.geraConsultas(10)
+    geraDados.geraConsultas(10)
 
 
 if __name__ == "__main__":
