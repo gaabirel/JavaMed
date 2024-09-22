@@ -38,7 +38,7 @@ class GeraDados:
         # vetor de ids para verificar depois
         ids = []
 
-        # id;nome;cpf;telefone
+        # id;telefone;cpf;nome;login;senha
         for i in range(n):
             id        = randint(1, 1000)
             # verifica se o ID ja foi criado
@@ -46,12 +46,13 @@ class GeraDados:
                 id = randint(1, 1000)
             ids.append(id)
 
-            nome      = f"{choice(nomes)} {choice(sobre)}"
-            cpf       = randint(10000000000, 99999999999)
             telefone  = randint(100000000, 999999999)
+            cpf       = randint(10000000000, 99999999999)
+            nome      = f"{choice(nomes)} {choice(sobre)}"
+            login     = nome.split(' ')[0]
             senha     = f"{nome.split(' ')[0]}{randint(100, 999)}"
 
-            saida.write(f"{id};{nome};{cpf};{telefone};{nome.split(' ')[0]};{senha}\n")
+            saida.write(f"{id};{telefone};{cpf};{nome};{login};{senha}\n")
             
             if self.debug:
                 print(f'{i+1:02d}. Dados de {nome} gerados')
@@ -73,7 +74,7 @@ class GeraDados:
             
             idPac = randint(1, 1000)
             idMed = randint(1, 1000)
-            data = f"{randint(1, 31):02d}/{randint(1, 12):02d}/{randint(2000, 2020)} {randint(0, 23):02d}:{randint(0, 59):02d}"
+            data  = f"{randint(1, 31):02d}/{randint(1, 12):02d}/{randint(2000, 2020)} {randint(0, 23):02d}:{randint(0, 59):02d}"
             doenca = choice(doencas)
 
             saida.write(f"{id};{idPac};{idMed};{data};{doenca}\n")
