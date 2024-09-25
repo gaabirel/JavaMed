@@ -17,7 +17,7 @@ public class UsuarioDAO {
 
     private String nomeArquivo;
 
-    UsuarioDAO(String nomeArquivo) {
+    public UsuarioDAO(String nomeArquivo) {
         this.nomeArquivo = nomeArquivo;
     }
 

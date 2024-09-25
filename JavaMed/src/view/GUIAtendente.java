@@ -1,7 +1,10 @@
+package view;
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.IOException;
 
 public class GUIAtendente extends JFrame implements ActionListener {
 
@@ -140,7 +143,11 @@ public class GUIAtendente extends JFrame implements ActionListener {
 
         if (e.getSource() == botaoVoltar) {
 
-            new GUI();
+            try {
+                new GUI();
+            } catch (IOException e1) {
+                e1.printStackTrace();
+            }
             this.dispose();
 
         }

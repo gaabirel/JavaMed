@@ -3,8 +3,17 @@
  *
  * made by Davi
  */
+package view;
 
-import javax.swing.*;
+ import javax.swing.*;
+
+
+import controller.PacienteController;
+import controller.UsuarioController;
+import dao.PacienteDAO;
+import dao.UsuarioDAO;
+import java.io.IOException;
+
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -22,8 +31,15 @@ public class GUI extends JFrame implements ActionListener {
     final JButton botaoFuncionario;
     final JButton botaoPaciente;
 
-    // Construtor
-    public GUI() {
+    // Componentes do controller
+    UsuarioController usuarioController;
+    PacienteDAO pacienteController;
+        
+        // Construtor
+        public GUI() throws IOException {
+            
+        usuarioController = new UsuarioController(new UsuarioDAO("C:\\Users\\gabri\\Desktop\\github\\JavaMed\\JavaMed\\data\\medicos.csv"));
+        pacienteController = new PacienteDAO("C:\\Users\\gabri\\Desktop\\github\\JavaMed\\JavaMed\\data\\pacientes.csv");
 
         // Setando configuracoes padrao da interface grafica
         this.setSize(750, 800); // Configurando as dimensoes do frame
@@ -95,17 +111,36 @@ public class GUI extends JFrame implements ActionListener {
             // Abrindo a tela de login
             TelaAcesso login = new TelaAcesso();
 
-            // armazenando as infos
-            String acesso = login.getLogin();
-            char[] senha = login.getSenha();
+            // definindo as infos
+            String acesso;
+            String senha;
+
+            // verificar se os campos estao vazios
+                // armazenando as infos
+            acesso = login.getLogin();
+            senha = new String(login.getSenha());
+
+            // Verificando se os campos foram preenchidos
+            if (acesso.strip() == "" || new String(senha).strip() == "" ) {
+                JOptionPane.showMessageDialog(null, "Erro! Os campos não podem estar vazios!");
+            }
+
+            //conferindo login
+            else{
+                if (usuarioController.login(acesso, senha)) {
+                    tipoAcesso.abrirGuia(acesso);
+                    this.dispose();
+                } else {
+                    JOptionPane.showMessageDialog(null, "Erro! Usuário não encontrado!");
+                }
+            }
+            
+
 
             // Printando as infos
             System.out.println(acesso);
             System.out.println(senha);
 
-            tipoAcesso.abrirGuia(acesso);
-
-            this.dispose();
 
 
 
@@ -115,9 +150,27 @@ public class GUI extends JFrame implements ActionListener {
 
             // Abrindo um JOptionPane pra receber o codigo da consulta
             String codigo = JOptionPane.showInputDialog("Digite o codigo da Consulta");
-            System.out.println(codigo);
+            if (codigo.strip() == ""){
+                JOptionPane.showMessageDialog(null, "Erro! Campo vazio!");
+            }
 
-            JOptionPane.showMessageDialog(null, "Consultas...");
+            else{
+                try {
+                    if (!pacienteController.verificarRegistroID(Integer.parseInt(codigo))){
+                        JOptionPane.showMessageDialog(null, "Erro! Paciente não está presente!");
+                    }
+
+                    else{
+                        System.out.println("ola mundo");
+                    }
+                } catch (NumberFormatException e1) {
+                    e1.printStackTrace();
+                } catch (IOException e1) {
+                    e1.printStackTrace();
+                }
+
+
+            }
 
         }
 
