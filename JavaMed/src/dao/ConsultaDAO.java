@@ -4,6 +4,7 @@ import java.io.*;
 import java.util.*;
 
 import model.Consulta;
+import model.Usuario;
 
 /*
  * classe que eh usada para manipular as consultas no banco de dados
@@ -222,6 +223,27 @@ public class ConsultaDAO {
 
     }
     
+    /*
+     * Método que modifica um usuario no arquivo, recebendo o ID
+    */
+    public void modificar(int idCon, Consulta novaConsulta) throws IOException {
+
+        // verificando se a consulta esta no banco, baseado no ID da consulta
+        if (!verificarConsultaId(idCon)) {
+            return;
+        }
+
+        // verificando se as consultas têm o mesmo ID
+        if (idCon != novaConsulta.getIdConsulta()) {
+            return;
+        }
+
+        // excluindo a antiga e salvando a nova
+        excluirUnico(idCon);
+        salvarUnico(novaConsulta);
+
+    }
+
     /*
      * Método que verifica se determinada consulta já está no banco com base no ID da consulta
     */
