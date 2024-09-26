@@ -1,10 +1,25 @@
+package view;
+
 import javax.swing.*;
+
+import model.Consulta;
+
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.IOException;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.time.*;
+import java.time.format.*;
+import dao.*;
+import controller.*;
 
 public class GUIAtendente extends JFrame implements ActionListener {
 
+    //Controller
+    ConsultaController consultaController = new ConsultaController(new ConsultaDAO());
+    
     // Criando os objetos a serem usados
         // Label
     final JLabel label;
@@ -115,7 +130,39 @@ public class GUIAtendente extends JFrame implements ActionListener {
     public void actionPerformed(ActionEvent e) {
 
         if (e.getSource() == botaoMarcarConsulta) {
-
+            // Abre um JOptionPane para obter os detalhes da consulta
+            String idConsulta = JOptionPane.showInputDialog("Digite o ID da consulta:");
+            try {
+                while(consultaController.verificarConsultaId(Integer.parseInt(idConsulta))){
+                    idConsulta = JOptionPane.showInputDialog("Digite o ID da consulta:");
+                }
+            } catch (HeadlessException | NumberFormatException | IOException e1) {
+                e1.printStackTrace();
+            }
+            
+            String idPaciente = JOptionPane.showInputDialog("Digite o ID do Paciente:");
+            String idMedico = JOptionPane.showInputDialog("Digite o ID do Médico:");
+            String data = JOptionPane.showInputDialog("Digite a data da consulta (dd/MM/yyyy):");
+            String hora = JOptionPane.showInputDialog("Digite a hora da consulta (HH:mm):");
+            String dataHora = data + " " + hora;
+            // Validar entrada
+            if (idPaciente == null || idMedico == null || data == null || hora == null) {
+                JOptionPane.showMessageDialog(null, "Erro! Todos os campos devem ser preenchidos.");
+                return; // Sair do método se a entrada for inválida
+            }
+            
+            // Convertendo data e hora para Date
+            LocalDateTime dataConsulta = LocalDateTime.parse(dataHora, DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm"));
+            // Criar um novo objeto Consulta
+            Consulta newConsulta = new Consulta(Integer.parseInt(idConsulta), Integer.parseInt(idPaciente), Integer.parseInt(idMedico), dataConsulta, null);
+            // Salvar a consulta
+            try {
+                consultaController.salvarConsulta(newConsulta);
+            } catch (IOException e1) {
+                e1.printStackTrace();
+            }
+            JOptionPane.showMessageDialog(null, "Consulta agendada com sucesso!");
+            
         }
 
         if (e.getSource() == botaoExcluirPaciente) {
@@ -127,6 +174,8 @@ public class GUIAtendente extends JFrame implements ActionListener {
         }
 
         if (e.getSource() == botaoVerConsultas) {
+
+            
 
         }
 
@@ -140,7 +189,11 @@ public class GUIAtendente extends JFrame implements ActionListener {
 
         if (e.getSource() == botaoVoltar) {
 
-            new GUI();
+            try {
+                new GUI();
+            } catch (IOException e1) {
+                e1.printStackTrace();
+            }
             this.dispose();
 
         }
