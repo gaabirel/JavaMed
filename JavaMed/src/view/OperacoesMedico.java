@@ -1,62 +1,68 @@
 package view;
+
+import java.io.IOException;
+import java.util.List;
+
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 
-import controller.MedicoController;
+import controller.ConsultaController;
+import dao.ConsultaDAO;
+import model.Consulta;
 
 public class OperacoesMedico extends JOptionPane {
 
+    // Criando a label para retornar as consultas
     private JLabel label;
 
-    public OperacoesMedico(int opcao) {
+    public OperacoesMedico(int opcao, int codigo) {
 
-        // Criando a label para retornar as consultas
         label = new JLabel();
 
         if (opcao == 1){
-            // exemplo de teste
-            String[] colunasConsultas = {"id", "Paciente", "Médico", "Data/Hora", "diagnostico"};
-            Object[][] dadosConsultas = {
-                {"1", "paciente", "medico", "26/09/2024 14:00", "nao tem"},
-            };
+            try {
+                    ConsultaController consultaController = new ConsultaController(new ConsultaDAO());               
 
-            // tabela de consultas
-            DefaultTableModel modeloConsultas = new DefaultTableModel(dadosConsultas, colunasConsultas);
-            JTable tabelaConsultas = new JTable(modeloConsultas);
+                    List<Consulta> consultas = consultaController.getConsultasByIdMedico(codigo);
 
-            // add a tabela de consultas em um JScrollPane para rolagem
-            JScrollPane painelRolagemConsultas = new JScrollPane(tabelaConsultas);
+                    // head da tabela
+                    String[] colunasConsultas = {"Consulta", "Paciente", "Médico", "Data/Hora", "Diagnóstico"};
+                    DefaultTableModel modeloConsultas = new DefaultTableModel(colunasConsultas, 0);
 
-            // exibir tabela
-            JOptionPane.showMessageDialog(null, painelRolagemConsultas, "Consultas", JOptionPane.INFORMATION_MESSAGE);
+                    if (consultas != null && !consultas.isEmpty()) {
+                        for (Consulta consulta : consultas) {
+                            int nomePaciente = consulta.getPaciente();
+                            int nomeMedico = consulta.getMedico();
+                            String dataHora = consulta.getData().toString();
+                            int idConsulta = consulta.getIdConsulta();
+                            String diagnostico = consulta.getDiagnostico();
 
-            
+                            modeloConsultas.addRow(new Object[]{idConsulta, nomePaciente, nomeMedico, dataHora, diagnostico});
+                        }
+                
+                        // tabela
+                        JTable tabelaConsultas = new JTable(modeloConsultas);
+                        JScrollPane painelRolagemConsultas = new JScrollPane(tabelaConsultas);
+                        JOptionPane.showMessageDialog(null, painelRolagemConsultas, "Consultas", JOptionPane.INFORMATION_MESSAGE);
+                
+                        
+                    } else {
+                        JOptionPane.showMessageDialog(null, "O medico não possui consultas registradas.");
+                    }
+                    
+                } catch (NumberFormatException e1) {
+                    e1.printStackTrace();
+                } catch (IOException e1) {
+                    e1.printStackTrace();
+                }
         }
 
         else if (opcao == 2){
-            // teste
-            String[] colunasPacientes = {"id", "Nome", "CPF", "Telefone"};
-            Object[][] dadosPacientes = {
-                {"2", "nome", "123123123", "987654321"},
-            };
-
-            // tabela de pacientes
-            DefaultTableModel modeloPacientes = new DefaultTableModel(dadosPacientes, colunasPacientes);
-            JTable tabelaPacientes = new JTable(modeloPacientes);
-
-            // add a tabela de pacientes em um JScrollPane para rolagem
-            JScrollPane painelRolagemPacientes = new JScrollPane(tabelaPacientes);
-
-            // exibir tabela
-            JOptionPane.showMessageDialog(null, painelRolagemPacientes, "Pacientes", JOptionPane.INFORMATION_MESSAGE);
-        
+            label.setText("Pacientes em breve...");
+            this.add(label);
+            JOptionPane.showMessageDialog(null, label, "Consultas", JOptionPane.INFORMATION_MESSAGE);
         }
 
-        // Adicionando o label ao JOptionPane
-        this.add(label);
-
-        // Especificando o tipo de OptionPane
-        JOptionPane.showMessageDialog(null, label, "Consultas", JOptionPane.INFORMATION_MESSAGE);
 
     }
 
