@@ -3,11 +3,22 @@
  *
  * made by Davi
  */
+package view;
 
-import javax.swing.*;
+ import javax.swing.*;
+ import javax.swing.table.DefaultTableModel;
+
+import controller.*;
+import dao.*;
+import model.Consulta;
+
+import java.io.IOException;
+
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+
+import java.util.ArrayList;
 
 public class GUI extends JFrame implements ActionListener {
 
@@ -22,8 +33,16 @@ public class GUI extends JFrame implements ActionListener {
     final JButton botaoFuncionario;
     final JButton botaoPaciente;
 
-    // Construtor
-    public GUI() {
+    // Componentes do controller
+    UsuarioController usuarioController;
+    PacienteController pacienteController;
+    ConsultaController consultaController;
+        // Construtor
+        public GUI() throws IOException {
+            
+      
+        pacienteController = new PacienteController(new PacienteDAO());
+        consultaController = new ConsultaController(new ConsultaDAO());
 
         // Setando configuracoes padrao da interface grafica
         this.setSize(750, 800); // Configurando as dimensoes do frame
@@ -85,7 +104,6 @@ public class GUI extends JFrame implements ActionListener {
     }
 
     // Funcionalidades dos botoes
-    @Override
     public void actionPerformed(ActionEvent e) {
 
         if (e.getSource() == botaoFuncionario) {
@@ -95,17 +113,38 @@ public class GUI extends JFrame implements ActionListener {
             // Abrindo a tela de login
             TelaAcesso login = new TelaAcesso();
 
-            // armazenando as infos
-            String acesso = login.getLogin();
-            char[] senha = login.getSenha();
+            // definindo as infos
+            String acesso;
+            String senha;
+
+            // verificar se os campos estao vazios
+                // armazenando as infos
+            acesso = login.getLogin();
+            senha = new String(login.getSenha());
+
+            // Verificando se os campos foram preenchidos
+            if (acesso == "" || new String(senha) == "" ) {
+                JOptionPane.showMessageDialog(null, "Erro! Os campos não podem estar vazios!");
+            }
+
+            //conferindo login
+            else{
+                
+                try {
+                    tipoAcesso.abrirGuia(acesso, senha);
+                } catch (IOException e1) {
+                    e1.printStackTrace();
+                }
+                this.dispose();
+            
+            }
+            
+
 
             // Printando as infos
             System.out.println(acesso);
             System.out.println(senha);
 
-            tipoAcesso.abrirGuia(acesso);
-
-            this.dispose();
 
 
 
@@ -114,10 +153,55 @@ public class GUI extends JFrame implements ActionListener {
         if (e.getSource() == botaoPaciente) {
 
             // Abrindo um JOptionPane pra receber o codigo da consulta
-            String codigo = JOptionPane.showInputDialog("Digite o codigo da Consulta");
-            System.out.println(codigo);
+            String codigo = JOptionPane.showInputDialog("Digite o codigo do Paciente:");
+            if (codigo == ""){
+                JOptionPane.showMessageDialog(null, "Erro! Campo vazio!");
+            }
 
-            JOptionPane.showMessageDialog(null, "Consultas...");
+            else{
+                try {
+                   
+                    if (!consultaController.verificaPacienteId(Integer.parseInt(codigo))){
+                        JOptionPane.showMessageDialog(null, "Paciente não possui uma consulta!");
+                    }
+
+                    else{
+                        ConsultaController consultaController = new ConsultaController(new ConsultaDAO()); 
+                       
+                        java.util.List<Consulta> consultas = consultaController.getConsultasByIdPaciente(Integer.parseInt(codigo));
+                     
+                        // head da tabela
+                        String[] colunasConsultas = {"Consulta", "Paciente", "Médico", "Data/Hora", "Diagnóstico"};
+                        DefaultTableModel modeloConsultas = new DefaultTableModel(colunasConsultas, 0);
+
+                        if (consultas != null && !consultas.isEmpty()) {
+                            for (Consulta consulta : consultas) {
+                                int nomePaciente = consulta.getPaciente();
+                                int nomeMedico = consulta.getMedico();
+                                String dataHora = consulta.getData().toString();
+                                int idConsulta = consulta.getIdConsulta();
+                                String diagnostico = consulta.getDiagnostico();
+    
+                                modeloConsultas.addRow(new Object[]{idConsulta, nomePaciente, nomeMedico, dataHora, diagnostico});
+                            }
+                    
+                            // tabela
+                            JTable tabelaConsultas = new JTable(modeloConsultas);
+                            JScrollPane painelRolagemConsultas = new JScrollPane(tabelaConsultas);
+                            JOptionPane.showMessageDialog(null, painelRolagemConsultas, "Consultas", JOptionPane.INFORMATION_MESSAGE);
+
+                        } else {
+                            JOptionPane.showMessageDialog(null, "O paciente não possui consultas registradas.");
+                        }
+                    }
+                } catch (NumberFormatException e1) {
+                    e1.printStackTrace();
+                } catch (IOException e1) {
+                    e1.printStackTrace();
+                }
+
+
+            }
 
         }
 
