@@ -224,7 +224,7 @@ public class ConsultaDAO {
     }
     
     /*
-     * Método que modifica um usuario no arquivo, recebendo o ID
+     * Método que modifica uma consulta no arquivo, recebendo o ID
     */
     public void modificar(int idCon, Consulta novaConsulta) throws IOException {
 
