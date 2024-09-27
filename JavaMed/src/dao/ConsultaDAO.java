@@ -4,7 +4,6 @@ import java.io.*;
 import java.util.*;
 
 import model.Consulta;
-
 /*
  * classe que eh usada para manipular as consultas no banco de dados
  *
@@ -14,12 +13,14 @@ import model.Consulta;
 public class ConsultaDAO {
 
     private String nomeArquivo;
+    private PacienteDAO pacienteDAO = new PacienteDAO();
+    private MedicoDAO medicoDAO = new MedicoDAO();
 
     public ConsultaDAO(String nomeArquivo) {
         this.nomeArquivo = nomeArquivo;
     }
     public ConsultaDAO() {
-        this.nomeArquivo = "../data/consultas.csv";
+        this.nomeArquivo = "JavaMed\\data\\consultas.csv";
     }
 
     // getters and setters
@@ -35,9 +36,13 @@ public class ConsultaDAO {
     */
     public void salvarUnico(Consulta consulta) throws IOException{
 
-        // verificando se a consulta ja existe
-        if ( verificarConsultaId(consulta.getIdConsulta()) ) {
-            return;
+        // verificando se a consulta ja existe, ou o paciente é inexistente, ou o medico é inexistente
+        boolean Vconsulta = verificarConsultaId(consulta.getIdConsulta());
+        boolean Vpaciente = pacienteDAO.verificarRegistroID(consulta.getPaciente()) ;
+        boolean Vmedico = medicoDAO.verificarRegistroID(consulta.getMedico());
+        System.out.println(medicoDAO.verificarRegistroID(consulta.getMedico()));
+        if (Vconsulta || !Vmedico || !Vpaciente) {
+            throw new IOException("A consulta já existe, ou o paciente ou o médico não foram encontrados.");
         }
 
         BufferedWriter bfw = new BufferedWriter(new FileWriter(nomeArquivo, true));
