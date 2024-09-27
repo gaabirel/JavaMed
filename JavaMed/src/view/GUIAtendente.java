@@ -169,6 +169,39 @@ public class GUIAtendente extends JFrame implements ActionListener {
 
         if (e.getSource() == botaoExcluirPaciente) {
 
+            // Abre um JOptionPane para obter o ID do paciente a ser excluído
+            String pacienteIdInput = JOptionPane.showInputDialog("Digite o ID do Paciente a ser excluído:");
+            if (pacienteIdInput == null) {
+                return; // Sair se o usuário cancelar
+            }
+            
+            try {
+                int pacienteId = Integer.parseInt(pacienteIdInput);
+                PacienteController pacienteController = new PacienteController(new PacienteDAO());
+                AtendenteController atendenteController = new AtendenteController(new PacienteDAO());
+                // Verificar se o paciente existe
+                if (pacienteController.verificarRegistroID(pacienteId)) {
+                    
+                    // Confirmar exclusão
+                    int option = JOptionPane.showConfirmDialog(null,
+                            "Tem certeza que deseja excluir o paciente com ID " + pacienteId + "?",
+                            "Confirmação de Exclusão",
+                            JOptionPane.YES_NO_OPTION);
+                    
+                    if (option == JOptionPane.YES_OPTION) {
+                        atendenteController.excluir(pacienteId);
+                        
+                        JOptionPane.showMessageDialog(null, "Paciente excluído com sucesso!");
+                    }
+                } else {
+                    JOptionPane.showMessageDialog(null, "Paciente não encontrado.");
+                }
+                
+            } catch (NumberFormatException ex) {
+                JOptionPane.showMessageDialog(null, "Erro! ID do Paciente deve ser um número.");
+            } catch (IOException ex) {
+                JOptionPane.showMessageDialog(null, "Erro ao excluir o paciente. Tente novamente.");
+            }
         }
 
         if (e.getSource() == botaoRegistrarPaciente) {
