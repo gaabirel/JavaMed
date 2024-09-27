@@ -8,8 +8,6 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.IOException;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.time.*;
 import java.time.format.*;
 import dao.*;
@@ -19,7 +17,7 @@ public class GUIAtendente extends JFrame implements ActionListener {
 
     //Controller
     ConsultaController consultaController = new ConsultaController(new ConsultaDAO());
-    
+  
     // Criando os objetos a serem usados
         // Label
     final JLabel label;
@@ -136,10 +134,10 @@ public class GUIAtendente extends JFrame implements ActionListener {
                 while(consultaController.verificarConsultaId(Integer.parseInt(idConsulta))){
                     idConsulta = JOptionPane.showInputDialog("Digite o ID da consulta:");
                 }
+                
             } catch (HeadlessException | NumberFormatException | IOException e1) {
                 e1.printStackTrace();
             }
-            
             String idPaciente = JOptionPane.showInputDialog("Digite o ID do Paciente:");
             String idMedico = JOptionPane.showInputDialog("Digite o ID do Médico:");
             String data = JOptionPane.showInputDialog("Digite a data da consulta (dd/MM/yyyy):");
@@ -158,10 +156,11 @@ public class GUIAtendente extends JFrame implements ActionListener {
             // Salvar a consulta
             try {
                 consultaController.salvarConsulta(newConsulta);
+                JOptionPane.showMessageDialog(null, "Consulta agendada com sucesso!");
             } catch (IOException e1) {
-                e1.printStackTrace();
+                JOptionPane.showMessageDialog(null, "Erro: " + e1.getMessage());
             }
-            JOptionPane.showMessageDialog(null, "Consulta agendada com sucesso!");
+        
             
         }
 
