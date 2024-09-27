@@ -1,24 +1,29 @@
 package view;
 
 import javax.swing.*;
+import javax.swing.table.DefaultTableModel;
 
+import controller.AtendenteController;
+import controller.ConsultaController;
+import controller.PacienteController;
+import dao.ConsultaDAO;
+import dao.PacienteDAO;
 import model.Consulta;
+import model.Paciente;
+import model.Usuario;
 
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.IOException;
-import java.time.*;
-import java.time.format.*;
-import dao.*;
-import controller.*;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 public class GUIAtendente extends JFrame implements ActionListener {
 
-    //Controller
-    ConsultaController consultaController = new ConsultaController(new ConsultaDAO());
-  
     // Criando os objetos a serem usados
+    ConsultaController consultaController = new ConsultaController(new ConsultaDAO());
+
         // Label
     final JLabel label;
 
@@ -134,10 +139,10 @@ public class GUIAtendente extends JFrame implements ActionListener {
                 while(consultaController.verificarConsultaId(Integer.parseInt(idConsulta))){
                     idConsulta = JOptionPane.showInputDialog("Digite o ID da consulta:");
                 }
-                
             } catch (HeadlessException | NumberFormatException | IOException e1) {
                 e1.printStackTrace();
             }
+            
             String idPaciente = JOptionPane.showInputDialog("Digite o ID do Paciente:");
             String idMedico = JOptionPane.showInputDialog("Digite o ID do Médico:");
             String data = JOptionPane.showInputDialog("Digite a data da consulta (dd/MM/yyyy):");
@@ -160,8 +165,6 @@ public class GUIAtendente extends JFrame implements ActionListener {
             } catch (IOException e1) {
                 JOptionPane.showMessageDialog(null, "Erro: " + e1.getMessage());
             }
-        
-            
         }
 
         if (e.getSource() == botaoExcluirPaciente) {
@@ -169,21 +172,140 @@ public class GUIAtendente extends JFrame implements ActionListener {
         }
 
         if (e.getSource() == botaoRegistrarPaciente) {
+            try {
+                PacienteController pacienteController = new PacienteController(new PacienteDAO());
+                // Abre um JOptionPane para obter os detalhes do paciente
+                String idPaciente = JOptionPane.showInputDialog("Digite o ID do paciente que deseja adicionar:");
+                String telefone = JOptionPane.showInputDialog("Digite o telefone:");
+                String cpf = JOptionPane.showInputDialog("Digite o CPF:");
+                String nome = JOptionPane.showInputDialog("Digite o nome:");
+                String login = JOptionPane.showInputDialog("Digite o login:");
+                JPasswordField campoSenha = new JPasswordField();
+                int option = JOptionPane.showConfirmDialog(null, campoSenha, "Digite a senha", JOptionPane.OK_CANCEL_OPTION);
+                String senha = (option == JOptionPane.OK_OPTION) ? new String(campoSenha.getPassword()) : null;
 
+
+
+
+                // Validar entrada
+                if (idPaciente == null || telefone == null || cpf == null || nome == null || login == null || senha == null) {
+                    JOptionPane.showMessageDialog(null, "Erro! Todos os campos devem ser preenchidos.");
+                    return; // Sair do método se a entrada for inválida
+                }
+
+                int id = Integer.parseInt(idPaciente);
+
+                Paciente paciente = new Paciente(id, telefone, cpf, nome, login, senha);
+
+            
+                pacienteController.adicionar(paciente);
+            } catch (IOException e1) {
+                e1.printStackTrace();
+            }
+            JOptionPane.showMessageDialog(null, "Paciente alterado com sucesso!");
         }
 
         if (e.getSource() == botaoVerConsultas) {
 
+            try {
+                ConsultaController consultaController = new ConsultaController(new ConsultaDAO());               
+
+                java.util.List<Consulta> consultas = consultaController.carregarConsultas();
+
+                    // head da tabela
+                    String[] colunasConsultas = {"Consulta", "Paciente", "Médico", "Data/Hora", "Diagnóstico"};
+                    DefaultTableModel modeloConsultas = new DefaultTableModel(colunasConsultas, 0);
+
+                    if (consultas != null && !consultas.isEmpty()) {
+                        for (Consulta consulta : consultas) {
+                            int nomePaciente = consulta.getPaciente();
+                            int nomeMedico = consulta.getMedico();
+                            String dataHora = consulta.getData().toString();
+                            int idConsulta = consulta.getIdConsulta();
+                            String diagnostico = consulta.getDiagnostico();
+
+                            modeloConsultas.addRow(new Object[]{idConsulta, nomePaciente, nomeMedico, dataHora, diagnostico});
+                        }
+                
+                        // tabela
+                        JTable tabelaConsultas = new JTable(modeloConsultas);
+                        JScrollPane painelRolagemConsultas = new JScrollPane(tabelaConsultas);
+                        JOptionPane.showMessageDialog(null, painelRolagemConsultas, "Consultas", JOptionPane.INFORMATION_MESSAGE);
+                
+                        
+                    } else {
+                        JOptionPane.showMessageDialog(null, "Não existem consultas registradas.");
+                    }
+                } catch (IOException e1) {
+                    e1.printStackTrace();
+                }
             
 
         }
 
         if (e.getSource() == botaoListarPacientes) {
+            try {
+                PacienteController pacienteController = new PacienteController(new PacienteDAO());               
 
+                java.util.List<Usuario> pacientes = pacienteController.printAll();
+
+                    // head da tabela
+                    String[] colunasConsultas = {"Id", "Nome", "CPF", "Telefone"};
+                    DefaultTableModel modeloConsultas = new DefaultTableModel(colunasConsultas, 0);
+
+                    if (pacientes != null && !pacientes.isEmpty()) {
+                        for (Usuario paciente : pacientes) {
+                            int idPaciente = paciente.getId();
+                            String nomePaciente = paciente.getNome();
+                            String cpf = paciente.getCpf();
+                            String telefone = paciente.getTelefone();
+
+                            modeloConsultas.addRow(new Object[]{idPaciente, nomePaciente, cpf, telefone});
+                        }
+                
+                        // tabela
+                        JTable tabelaConsultas = new JTable(modeloConsultas);
+                        JScrollPane painelRolagemConsultas = new JScrollPane(tabelaConsultas);
+                        JOptionPane.showMessageDialog(null, painelRolagemConsultas, "Pacientes", JOptionPane.INFORMATION_MESSAGE);
+                
+                        
+                    } else {
+                        JOptionPane.showMessageDialog(null, "Não existem pacientes registrados.");
+                    }
+                } catch (IOException e1) {
+                    e1.printStackTrace();
+                }
         }
 
         if (e.getSource() == botaoAlterarPaciente) {
+            try {
+                PacienteController pacienteController = new PacienteController(new PacienteDAO());
+                // Abre um JOptionPane para obter os detalhes do paciente
+                String idPaciente = JOptionPane.showInputDialog("Digite o ID do paciente que deseja alterar:");
+                String telefone = JOptionPane.showInputDialog("Digite o novo telefone:");
+                String cpf = JOptionPane.showInputDialog("Digite o novo CPF:");
+                String nome = JOptionPane.showInputDialog("Digite o novo nome:");
+                String login = JOptionPane.showInputDialog("Digite o novo login:");
+                JPasswordField campoSenha = new JPasswordField();
+                int option = JOptionPane.showConfirmDialog(null, campoSenha, "Digite a nova senha", JOptionPane.OK_CANCEL_OPTION);
+                String senha = (option == JOptionPane.OK_OPTION) ? new String(campoSenha.getPassword()) : null;
 
+                // Validar entrada
+                if (idPaciente == null || telefone == null || cpf == null || nome == null || login == null || senha == null) {
+                    JOptionPane.showMessageDialog(null, "Erro! Todos os campos devem ser preenchidos.");
+                    return; // Sair do método se a entrada for inválida
+                }
+
+                int id = Integer.parseInt(idPaciente);
+
+                Paciente pacienteAtualizado = new Paciente(id, telefone, cpf, nome, login, senha);
+
+            
+                pacienteController.atualizar(id, pacienteAtualizado);
+            } catch (IOException e1) {
+                e1.printStackTrace();
+            }
+            JOptionPane.showMessageDialog(null, "Paciente alterado com sucesso!");
         }
 
         if (e.getSource() == botaoVoltar) {
